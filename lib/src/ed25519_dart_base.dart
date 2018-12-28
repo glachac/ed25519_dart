@@ -50,26 +50,26 @@ Uint8List bitClamp(Uint8List bytes) {
 ///     print(bytes.runtimeType); // Uint8List
 Uint8List bytesFromList(List<int> lst) => new Uint8List.fromList(lst);
 
-/// Converts [bytes] into fixed-size integer.
+/// Converts [bytes] into a BigInt from bytes in big-endian encoding.
 /// [bytes] length should be at least 32.
 ///
 ///     var l = new List<int>.generate(32, (int i) => i + i); // [0, ..., 60, 62]
 ///     bytesToInteger(l); // 28149809252802682310...81719888435032634998129152
 BigInt bytesToInteger(List<int> bytes) {
-  var value = BigInt.zero;
   bytes = bytes.sublist(0, 32);
+  var result = BigInt.zero;
   for (var i = 0; i < bytes.length; i++) {
-    value += BigInt.from(bytes[i] * pow(bits, i));
+    result += BigInt.from(bytes[i]) << (8 * i); // bytes.length - i - 1
   }
-  ;
-  return value;
+  return result;
 }
 
 /// Converts integer [intVal] into [x, y] point.
 ///
 ///     decodePoint(28149809252802682310); // [2063...9514, 28149809252802682310]
 List<BigInt> decodePoint(BigInt intVal) {
-  var y = intVal % (BigInt.from(pow(2, (bits - 1))));
+  var y = intVal % (ONE << 255); //BigIntfrom(pow(2, (bits - 1))));
+  //var y = intVal >> (bits - 1);
   var x = xRecover(y);
   if ((x & ONE) != ((intVal >> (bits - 1))) & ONE) {
     x = primeQ - x;
@@ -111,12 +111,19 @@ Uint8List Hash(Uint8List m) => new Digest('SHA-512').process(m);
 /// Converts integer [e] into [Uint8List] with length [length].
 ///
 ///     integerToBytes(1, 32); // [0, 4, ... 0, 0, 0, 0, 0]
-Uint8List integerToBytes(BigInt e, int length) {
-  var byteList = new Uint8List(length);
+
+final _byteMask = new BigInt.from(0xff);
+
+/// Encode a BigInt into bytes using big-endian encoding.
+Uint8List integerToBytes(BigInt number, int length) {
+  // Not handling negative numbers. Decide how you want to do that.
+  // var size = (number.bitLength + 7) >> 3;
+  var result = new Uint8List(length);
   for (var i = 0; i < length; i++) {
-    byteList[0 + i] = (e >> (i * 8)) as int;
+    result[i] = (number & _byteMask).toInt();
+    number = number >> 8;
   }
-  return byteList;
+  return result;
 }
 
 /// Returns [bool] that that indicates if point [P] is on curve.
@@ -147,12 +154,12 @@ BigInt modularInverse(BigInt z) => z.modInverse(primeQ);
 /// Returns integer [x] to the power of `pow(2, p)` with modulo [primeQ].
 ///
 ///     modularPow(3, 2); // 81
-int modularPow(int x, int p) => x.modPow(pow(2, p).toInt(), primeQ as int);
+// int modularPow(int x, int p) => x.modPow(pow(2, p).toInt(), primeQ as int);
 
 /// Generates public key from given secret key [sk].
 /// Public key is [Uint8List] with size 32.
 ///
-///     publicKey(new Uint8List.fromList([1,2,3])); // [11, 198,162, ..., 184, 7]
+///     publicKey(new Uint8List.fromList([1,2,3])); // [11, 198, ..., 184, 7]
 Uint8List publicKey(Uint8List sk) {
   var skHash = Hash(sk);
   var clamped = bytesToInteger(bitClamp(skHash));
@@ -172,7 +179,6 @@ List<BigInt> scalarMult(List<BigInt> P, BigInt e) {
   if (e & ONE > BigInt.zero) {
     Q = edwards(Q, P);
   }
-  ;
   return Q;
 }
 

@@ -119,24 +119,34 @@ void main() {
     expect((bytesFromList(testData) is Uint8List), equals(true));
   });
   test("bytesToInteger() converts List of integers into integer", () {
-    var testData = new List<int>.filled(32, 0);
-    var testData2 = new List<int>.filled(32, 2);
-    var expected = 0;
+    var testData = List<int>.filled(32, 0);
+    var testData2 = List<int>.filled(32, 2);
+    var expected = BigInt.zero;
     var expected2 = BigInt.parse(
         "908173248920127022929968509872062022378588115024631874819275168689514742274");
     expect(bytesToInteger(testData), equals(expected));
     expect(bytesToInteger(testData2), equals(expected2));
   });
+
+  test("bytesToInteger() converts List of integers into integer two", () {
+    var l = List<int>.generate(32, (int i) => i + i); // [0, ..., 60, 62]
+    var expected = BigInt.parse(
+        "28149809252802682310739102360897169509334746906488981719888435032634998129152");
+    expect(bytesToInteger(l), equals(expected));
+  });
+
+  ///     bytesToInteger(l); // 28149809252802682310...81719888435032634998129152
   test("decodePoint() creates expected point x-y point from passed integer",
       () {
     var testData = BigInt.from(1024128256);
     var expected = [
       BigInt.parse(
           "5049901154188754798176685959377395864974690556190068451341045359400187598236"),
-      1024128256
+      BigInt.from(1024128256)
     ];
     expect(decodePoint(testData), equals(expected));
   });
+
   test("edwards() adds two x-y points with expected result", () {
     var testData = [BigInt.from(1), BigInt.from(2)];
     var expected = [
@@ -311,12 +321,14 @@ void main() {
         "28948022309329048855892746252171976963317496166410141009864396001978282409975");
     expect(modularInverse(testData), equals(expected));
   });
+
+/*
   test("modularPow() computes and returns expected integer", () {
     var testData = 2;
     var expected = 256;
     expect(modularPow(testData, testData + 1), equals(expected));
   });
-
+*/
   test("publicKey() creates expected public key from passed secret key", () {
     var testData = new Uint8List(32);
     var expected = [
@@ -353,6 +365,50 @@ void main() {
       218,
       41
     ];
+    expect(publicKey(testData), equals(expected));
+  });
+
+  test("publicKey() creates expected public key from passed secret key two",
+      () {
+    var testData = new Uint8List(3);
+    testData[0] = 1;
+    testData[1] = 2;
+    testData[2] = 3;
+    var expected = [
+      11,
+      198,
+      96,
+      97,
+      15,
+      25,
+      31,
+      87,
+      30,
+      44,
+      177,
+      161,
+      164,
+      203,
+      155,
+      170,
+      94,
+      104,
+      122,
+      134,
+      86,
+      232,
+      162,
+      100,
+      56,
+      112,
+      207,
+      91,
+      158,
+      229,
+      184,
+      7
+    ];
+    print(publicKey(testData));
     expect(publicKey(testData), equals(expected));
   });
   test("scalarMult() returns expected scalar multiplication of point", () {
