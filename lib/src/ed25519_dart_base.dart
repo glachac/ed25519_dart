@@ -11,6 +11,8 @@ import 'dart:typed_data' show Uint8List;
 
 import 'package:pointycastle/pointycastle.dart' show Digest;
 
+var digestIdentifier = 'SHA-512';
+
 // Magic constants
 final baseX = BigInt.parse(
     "15112221349535400772501151409588531511454012693041857206046113283949847762202");
@@ -106,7 +108,7 @@ Uint8List encodePoint(List<BigInt> P) {
 /// Digest message is result of hashing message [m].
 ///
 ///    Hash(new Uint8List(8)); // [27, 116, ..., 82, 196, 47, 27]
-Uint8List Hash(Uint8List m) => new Digest('SHA-512').process(m);
+Uint8List Hash(Uint8List m) => new Digest(digestIdentifier).process(m);
 
 /// Converts integer [e] into [Uint8List] with length [length].
 ///
