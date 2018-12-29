@@ -151,11 +151,6 @@ bool isOnCurve(List<BigInt> P) {
 ///     modularInverse(2); // 28948022...41009864396001978282409975
 BigInt modularInverse(BigInt z) => z.modInverse(primeQ);
 
-/// Returns integer [x] to the power of `pow(2, p)` with modulo [primeQ].
-///
-///     modularPow(3, 2); // 81
-// int modularPow(int x, int p) => x.modPow(pow(2, p).toInt(), primeQ as int);
-
 /// Generates public key from given secret key [sk].
 /// Public key is [Uint8List] with size 32.
 ///
