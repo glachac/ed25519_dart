@@ -11,7 +11,11 @@ import 'dart:typed_data' show Uint8List;
 
 import 'package:pointycastle/pointycastle.dart' show Digest;
 
-var digestIdentifier = 'SHA-512';
+String digestIdentifier = 'SHA-512';
+
+void setDigestIdentifier(String id) {
+  digestIdentifier = id;
+}
 
 // Magic constants
 final baseX = BigInt.parse(
