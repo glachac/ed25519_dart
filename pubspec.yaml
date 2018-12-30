@@ -5,7 +5,7 @@ homepage: https://github.com/semolex
 author: Oleksii Semeshchuk <semolex@live.com>
 
 environment:
-  sdk: '>=2.1.0'
+  sdk: '<3.0.0'
 
 dependencies:
   pointycastle:
