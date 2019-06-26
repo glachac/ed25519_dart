@@ -8,7 +8,7 @@ environment:
   sdk: '>=2.2.0 <3.0.0'
 
 dependencies:
-  pointycastle: "^0.10.0+5"
+  pointycastle: ^1.0.1
 
 dev_dependencies:
   test: ^0.12.0
