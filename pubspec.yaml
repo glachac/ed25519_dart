@@ -11,4 +11,4 @@ dependencies:
   pointycastle: ^1.0.1
 
 dev_dependencies:
-  test: ^0.12.0
+  test:
